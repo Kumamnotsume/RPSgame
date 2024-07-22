@@ -1,0 +1,46 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rock Paper Scissors</title>
+    <style>
+        /* Add some basic styles */
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>Rock Paper Scissors</h1>
+        <div id="status"></div>
+        <div id="choices">
+            <button onclick="makeMove('rock')">Rock</button>
+            <button onclick="makeMove('paper')">Paper</button>
+            <button onclick="makeMove('scissors')">Scissors</button>
+        </div>
+        <div id="result"></div>
+        <div id="computer_choice"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('connect', () => {
+            const data = { room: 'room1', username: 'Player1' };
+            socket.emit('join', data);
+        });
+
+        socket.on('status', (data) => {
+            document.getElementById('status').innerText = data.msg;
+        });
+
+        socket.on('result', (data) => {
+            document.getElementById('result').innerText = `Result: ${data.result}`;
+            document.getElementById('computer_choice').innerText = `Computer chose: ${data.computer_action}`;
+        });
+
+        function makeMove(move) {
+            const data = { move: move, room: 'room1', username: 'Player1' };
+            socket.emit('move', data);
+        }
+    </script>
+</body>
+</html>
